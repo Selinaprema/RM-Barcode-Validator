@@ -2,34 +2,46 @@
 
 import { useState } from "react";
 import Button from "@/components/ui/Button";
+import { validateBarcode } from "@/lib/Barcode";
+
+
 
 //  handles barcode input and submission
 export default function BarcodeInput() {
   
-  const inputId = "barcode-input";
+  const input = "barcode-input";
   const [value, setValue] = useState("");
 
-
+// (Used AI to helo with thisa as wasn't sure how to store the barcode and show message)
   const [submitted, setSubmitted] = useState<string | null>(null);
 
-  // Handles form submission
-  function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const capitalised = value.toUpperCase();
-    setValue(capitalised);
-    setSubmitted(capitalised);
+  // Event handler to handle logic and show message
+ function onSubmit(e: React.FormEvent) {
+  e.preventDefault();
+
+  const result = validateBarcode(value);
+
+  if (!result.ok) {
+    setSubmitted(null);
+    alert(result.message); 
+    return;
   }
+
+  setValue("");
+  setSubmitted(result.capitalised);
+}
+
 
   return (
     <section >
      
-      <form className="input" onSubmit={onSubmit}>
-        <label className="label" htmlFor={inputId}>
+      <form className="form" onSubmit={onSubmit}>
+        <label className="label" htmlFor={input}>
           Barcode
         </label>
-
+  {/*(Used AI to helo with thisa as wasn't sure how to handle controlled inputs */}
         <input
-          id={inputId}
+          id={input}
           className="input"
           value={value}
           onChange={(e) => setValue(e.target.value.toUpperCase())}
@@ -42,7 +54,7 @@ export default function BarcodeInput() {
         </div>
       </form>
 
-      {/* Show feedback only after a barcode has been submitted */}
+      
       {submitted && (
         <div className="message">
           Submitted: <code>{submitted}</code>
