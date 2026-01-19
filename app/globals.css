@@ -39,3 +39,38 @@
   padding: 18px;
 }
 
+/* input & button */
+
+.input {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.label {
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 12px;
+  border: 1px solid var(--rm-border);
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 0;
+  background: var(--rm-red);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}

@@ -1,3 +1,5 @@
+import BarcodeInput from "@/components/BarcodeInput";
+
 export default function Page() {
   return (
     <main className="container">
@@ -6,6 +8,7 @@ export default function Page() {
         <p className="instructions">
           Enter your barcode and check it's validity
         </p>
+         <BarcodeInput />
       </section>
     </main>
   );
