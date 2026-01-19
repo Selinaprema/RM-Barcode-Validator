@@ -1,7 +1,7 @@
 // Weights used to calculate the Royal Mail check digit
 const WEIGHTS = [8, 6, 4, 2, 3, 5, 9, 7];
 
-// Calculates the check digit based on the 8-digit serial number (used AI to help with this bit)
+// Calculates the check digit based on the 8-digit serial number (used AI to help with this bit as unfamiliar with typescript )
 export function computeCheckDigit(digits: string): number {
   let sum = 0;
 
@@ -15,6 +15,7 @@ export function computeCheckDigit(digits: string): number {
   if (result === 11) return 5;
   return result;
 }
+// used AI to help with this function
 
 export function validateBarcode(inputResult: string) {
   const input = (inputResult || "").trim().toUpperCase();
@@ -25,6 +26,14 @@ export function validateBarcode(inputResult: string) {
   const checkDigit = input[10];
   const countryCode = input.slice(11, 13);
 
+
+  
+  // Check  length is 13
+  if (input.length !== 13) 
+    { return { ok: false, error: "LENGTH", message: "Validation failed - Barcode is not the correct length (must be 13 characters)", };
+ }
+
+  
   // Check  prefix is  2 letters from A–Z
   for (let i = 0; i < prefix.length; i++) {
     const char = prefix[i];
