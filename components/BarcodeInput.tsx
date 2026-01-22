@@ -4,17 +4,19 @@ import { useState } from "react";
 import Button from "@/components/ui/Button";
 import { validateBarcode } from "@/lib/Barcode";
 import { mockValidateBarcodeApi } from "@/lib/mockApi";
+import HistoryList from "@/components/HistoryList";
+import type { HistoryEntry } from "@/types/history";
 
 //  handles barcode input and submission
 export default function BarcodeInput() {
   const input = "barcode-input";
   const [value, setValue] = useState("");
-
   // (Used AI to help with thisa as wasn't sure how to store the barcode and show message)
   const [submitted, setSubmitted] = useState<string | null>(null);
-
-  // handles API status
   const [apiStatus, setApiStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+
+  
 
   // change to async function
   async function onSubmit(e: React.FormEvent) {
@@ -30,20 +32,39 @@ export default function BarcodeInput() {
       return;
     }
 
+     const id = crypto.randomUUID();
+
+    setHistory((prev) => [
+      // Newest at the top
+      { id, barcode: result.capitalised, status: "validating" },
+      ...prev,
+    ]);
+       
+
     setValue("");
     setSubmitted(result.capitalised);
 
-    // API call (must be inside onSubmit so it runs after pre-validation passes)
+    // API call 
     setApiStatus("loading");
+    
 
-    try {
+   try {
       await mockValidateBarcodeApi(result.capitalised);
       setApiStatus("success");
+
+      setHistory((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, status: "valid" } : item))
+      );
     } catch {
       setApiStatus("error");
+
+      setHistory((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, status: "invalid" } : item))
+      );
     }
   }
-
+    
+  
   return (
     <section>
       <form className="form" onSubmit={onSubmit}>
@@ -74,6 +95,7 @@ export default function BarcodeInput() {
       {apiStatus === "loading" && <div className="message">Validating...</div>}
       {apiStatus === "success" && <div className="message">Valid barcode</div>}
       {apiStatus === "error" && <div className="message">Invalid barcode</div>}
+      <HistoryList items={history} />
     </section>
   );
 }
