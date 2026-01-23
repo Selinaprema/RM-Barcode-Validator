@@ -13,9 +13,10 @@ export default function HistoryList({ items }: { items: HistoryEntry[] }) {
           {items.map((item) => (
             <li key={item.id} className="listItem">
               <div className="barcode">{item.barcode}</div>
-              <div className="statusText">
-                {item.status === "validating" ? "Validating..." : item.status}
+              <div className={`statusText ${item.status}`}>
+                 {item.status === "validating" ? "Validating..." : item.status}
               </div>
+
             </li>
           ))}
         </ul>

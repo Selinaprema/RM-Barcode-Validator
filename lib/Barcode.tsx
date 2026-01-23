@@ -1,4 +1,3 @@
-// Weights used to calculate the Royal Mail check digit
 const WEIGHTS = [8, 6, 4, 2, 3, 5, 9, 7];
 
 // Calculates the check digit based on the 8-digit serial number (used AI to help with this bit as unfamiliar with typescript )
@@ -15,12 +14,10 @@ export function computeCheckDigit(digits: string): number {
   if (result === 11) return 5;
   return result;
 }
-// used AI to help with this function
+
 
 export function validateBarcode(inputResult: string) {
-  const input = (inputResult || "").trim().toUpperCase();
-
-
+  const input = (inputResult || "").trim().toUpperCase(); // used AI to help with the input
   const prefix = input.slice(0, 2);
   const serialNumber = input.slice(2, 10);
   const checkDigit = input[10];

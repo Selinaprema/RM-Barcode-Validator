@@ -4,21 +4,22 @@ import { useState } from "react";
 import Button from "@/components/ui/Button";
 import { validateBarcode } from "@/lib/Barcode";
 import { mockValidateBarcodeApi } from "@/lib/mockApi";
-import HistoryList from "@/components/HistoryList";
-import type { HistoryEntry } from "@/types/history";
+import Spinner from "@/components/ui/Spinner";
+import type { HistoryEntry } from "@/types/history"; 
 
-//  handles barcode input and submission
-export default function BarcodeInput() {
+export default function BarcodeInput({
+  //Removed history state and instead recieves onHistoryUpdate as a prop (used AI to help here)
+  onHistoryUpdate,
+}: {
+  onHistoryUpdate: (entry: HistoryEntry) => void;
+}) {
   const input = "barcode-input";
   const [value, setValue] = useState("");
-  // (Used AI to help with thisa as wasn't sure how to store the barcode and show message)
   const [submitted, setSubmitted] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [apiStatus, setApiStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [history, setHistory] = useState<HistoryEntry[]>([]);
 
-  
-
-  // change to async function
+  // change to async function - used AI to he
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
 
@@ -26,76 +27,71 @@ export default function BarcodeInput() {
 
     const result = validateBarcode(value);
 
-    if (!result.ok) {
-      setSubmitted(null);
-      alert(result.message);
-      return;
-    }
+   if (!result.ok) {
+  setSubmitted(null);
+  setError(result.message);
+  return;
+}
 
-     const id = crypto.randomUUID();
+  setError(null);
 
-    setHistory((prev) => [
-      // Newest at the top
-      { id, barcode: result.capitalised, status: "validating" },
-      ...prev,
-    ]);
-       
+    // Used AI to help write this bit
+    const id = crypto.randomUUID();
+
+    onHistoryUpdate({ id, barcode: result.capitalised, status: "validating" });
 
     setValue("");
     setSubmitted(result.capitalised);
-
-    // API call 
     setApiStatus("loading");
-    
 
-   try {
+    // Used AI to help with error handling
+    try {
       await mockValidateBarcodeApi(result.capitalised);
       setApiStatus("success");
-
-      setHistory((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, status: "valid" } : item))
-      );
+      onHistoryUpdate({ id, barcode: result.capitalised, status: "valid" });
     } catch {
       setApiStatus("error");
-
-      setHistory((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, status: "invalid" } : item))
-      );
+      onHistoryUpdate({ id, barcode: result.capitalised, status: "invalid" });
     }
   }
-    
-  
+
   return (
     <section>
       <form className="form" onSubmit={onSubmit}>
         <label className="label" htmlFor={input}>
-          Barcode
+          Please Input Your Barcode
         </label>
 
-        {/*(Used AI to helo with thisa as wasn't sure how to handle controlled inputs */}
-        <input
-          id={input}
-          className="input"
-          value={value}
-          onChange={(e) => setValue(e.target.value.toUpperCase())}
-          placeholder="EG. XH545554533GB"
-        />
+        <div className="inputRow">
+          {/*(Used AI to help  with this as wasn't sure how to handle controlled inputs */}
+          <input
+            id={input}
+            className="textInput"
+            value={value}
+            onChange={(e) => setValue(e.target.value.toUpperCase())}
+            placeholder="EG. XH545554533GB"
+          />
 
-        <div className="row">
           <Button type="submit">Submit</Button>
         </div>
       </form>
-
+      {error && (
+  <div className="message error">
+    {error}
+  </div>
+)}
       {submitted && (
+  <div className="message">
+    Submitted: <code>{submitted}</code>
+  </div>
+)}
+      {apiStatus === "loading" && (
         <div className="message">
-          Submitted: <code>{submitted}</code>
+          <Spinner /> Validating
         </div>
       )}
-
-      {apiStatus === "loading" && <div className="message">Validating...</div>}
       {apiStatus === "success" && <div className="message">Valid barcode</div>}
       {apiStatus === "error" && <div className="message">Invalid barcode</div>}
-      <HistoryList items={history} />
     </section>
   );
 }
