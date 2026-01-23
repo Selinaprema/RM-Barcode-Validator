@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+### Setup and Run Instructions
 
-## Getting Started
-
-First, run the development server:
-
+#### Prerequisites
+- Node.js (v18 or higher recommended)
+- npm
+  
+#### Install dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+#### Run locally
+npm run dev
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+#### Open in browser
+http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+#### Technical decisions and why
+Local component state (useState) is used to manage input, API status, and validation history. As this was a small task, I didn't feel the need to use g global state or external libraries.
 
-## Learn More
+#### Structure Overview
 
-To learn more about Next.js, take a look at the following resources:
+```text
+rm-barcode-validator/
+├── app/
+│   ├── favicon.ico
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+│
+├── components/
+│   ├── BarcodeInput.tsx
+│   ├── HistoryList.tsx
+│   ├── ui/
+│   │   ├── Button.tsx
+│   │   └── Spinner.tsx
+│   └── layout/
+│       ├── Header.tsx
+│       └── Footer.tsx
+│
+├── lib/
+│   ├── Barcode.ts
+│   └── mockApi.ts
+│
+├── tests/
+│   └── barcode.test.ts
+│
+├── types/
+│   └── history.ts
+│
+├── public/
+│
+├── .gitignore
+├── eslint.config.mjs
+├── jest.config.ts
+├── next.config.ts
+├── next-env.d.ts
+├── package.json
+├── package-lock.json
+├── postcss.config.mjs
+├── tsconfig.json
+└── README.md
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### Known Limitations / Trade-offs
+- Validation history is stored in memory and resets on page refresh
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### Improvements
+- I'm not familiar with Aria so didn't inlude it
 
-## Deploy on Vercel
+#### Test instructions
+This project uses **Jest** for unit testing for barcode validation logic and check digit calculation.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To run the tests:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm test
+
+
